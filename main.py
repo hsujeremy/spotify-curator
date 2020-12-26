@@ -6,7 +6,39 @@ import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyClientCredentials
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
 
+
+def remove_features(features, item):
+  ret = {}
+  for f in features:
+    ret[f] = item[f]
+  return ret
+
+def get_songs_from_user(audio_f, uid):
+  playlists = sp.user_playlists('12176195123') #My user profile
+  audio_features = []
+  while playlists:
+    print("Playlist names: ")  
+    for i, playlist in enumerate(playlists['items']):
+        tracks = sp.playlist_tracks(playlist['id'])
+        print(playlist["name"])
+        if tracks: 
+          for j, track in enumerate(tracks['items']):
+            id = track['track']['id']
+            features = sp.audio_features(id)
+            removed = remove_features(audio_f, features[0])
+            audio_features.append(removed)
+          
+    if playlists['next']:
+        playlists = sp.next(playlists)
+    else:
+        playlists = None
+    print("Songs from user", uid, "have been added")
+    return audio_features
+
+ 
 
 def setup():
     load_dotenv()
@@ -55,7 +87,8 @@ if __name__ == '__main__':
     song_attributes = ('album', 'track_number', 'id', 'name', 'uri', 'acousticness', 'danceability',
                        'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo',
                        'valence', 'popularity')
-
+    
+    features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence']
     album_names = []
     album_uris = []
     for item in sp_albums['items']:
@@ -93,11 +126,29 @@ if __name__ == '__main__':
 
     df = pd.DataFrame.from_dict(dict_df)
 
-    print('Original dataframe size: {}'.format(len(df)))
-    final_df = df.sort_values('popularity', ascending=False).drop_duplicates('name').sort_index()
-    print('Final dataframe size: {}'.format(len(final_df)))
+    df_2 = pd.DataFrame(get_songs_from_user(features, '12176195123'))
+    n_rows = len(df_2.index)
+    df_2['Label'] = np.ones(n_rows)
+    print(df_2)
+    forest = RandomForestClassifier()
+    forest_params = {
+        "n_estimators": np.arange(10, 200, 10),
+        "min_samples_leaf": np.arange(1, 100, 10),
+        "max_features": ['auto', 'sqrt', 'log2']
+    }
+    clf = GridSearchCV(forest, forest_params)
 
-    final_df.to_csv('./output.csv')
+    clf.fit(df_2, np.ones(n_rows))
+    print(clf.best_params_)
+
+    print(df_2)
+
+    # print('Original dataframe size: {}'.format(len(df)))
+    # final_df = df.sort_values('popularity', ascending=False).drop_duplicates('name').sort_index()
+    # print('Final dataframe size: {}'.format(len(final_df)))
+
+    df_2.to_csv('./user_liked_songs.csv')
+    # final_df.to_csv('./output.csv')
 
 
 

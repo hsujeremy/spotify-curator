@@ -2,3 +2,4 @@ spotipy
 numpy
 pandas
 python-dotenv
+scikit-learn
