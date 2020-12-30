@@ -10,19 +10,44 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
+def getUserInput(audio_f, clf):
+    song = ''
+    while song != 'quit':
+        song = input("Enter a song name: ")
+        songs = sp.search(song, limit=1, offset=0)
+        audio_features = []
+        if(songs):
+            for track in songs["tracks"]["items"]:
+                print(track)
+                id = track['id']
+                features = sp.audio_features(id)
+                if(features):
+                    removed = remove_features(audio_f, features[0])
+                    audio_features.append(removed)
+        
+        df_song = pd.DataFrame(audio_features)
+        print(clf.classes_)
+        print("Prediction: ", clf.predict_proba(df_song))
+        
+
 def getRandomSongs(audio_f):
     audio_features = []
 
     for i in range(50):
-        offset = random.randint(0, 2000)
+        offset = random.randint(0, 500)
+        print(offset)
+        
         query = getRandomSearch()
+        print(query)
         songs = sp.search(query, limit=10, offset=offset)
         if(songs):
             for track in songs["tracks"]["items"]:
                 id = track['id']
                 features = sp.audio_features(id)
-                removed = remove_features(audio_f, features[0])
-                audio_features.append(removed)
+                if(features):
+                    print(features)
+                    removed = remove_features(audio_f, features[0])
+                    audio_features.append(removed)
     
     return audio_features
 
@@ -50,8 +75,9 @@ def get_songs_from_user(audio_f, uid):
           for j, track in enumerate(tracks['items']):
             id = track['track']['id']
             features = sp.audio_features(id)
-            removed = remove_features(audio_f, features[0])
-            audio_features.append(removed)
+            if(features):
+                removed = remove_features(audio_f, features[0])
+                audio_features.append(removed)
           
     if playlists['next']:
         playlists = sp.next(playlists)
@@ -156,14 +182,17 @@ if __name__ == '__main__':
     n_random_songs = len(df_random.index)
     random_labels = np.zeros(n_random_songs)
     labels = np.append(user_labels, random_labels)
-    # print(labels)
+    print(labels)
 
 
-    # print(df_random)
-    # print(df_user)
+    print(df_random)
+    print(df_user)
     # print(getRandomSearch())
 
-    data = pd.DataFrame.append(df_user, df_random)
+    df_user = df_user.append(df_random, ignore_index=True)
+
+    print(df_user)
+    
     forest = RandomForestClassifier()
     forest_params = {
         "n_estimators": np.arange(10, 200, 10),
@@ -172,8 +201,17 @@ if __name__ == '__main__':
     }
     clf = GridSearchCV(forest, forest_params)
 
-    clf.fit(data, labels)
+    clf.fit(df_user, labels)
     print(clf.best_params_)
+
+    getUserInput(features, clf)
+
+    
+
+    
+        
+        
+
 
 
     # print('Original dataframe size: {}'.format(len(df)))
