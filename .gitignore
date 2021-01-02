@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Server files
+.vscode
+backend/venv
+backend/__pycache__
+
+# Output files
+.cache
+*.csv
