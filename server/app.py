@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import json
 import time
@@ -63,25 +64,3 @@ def go():
     print(response['id'])
     print(sp.user_playlists(response['id']))
     return 'Go'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
