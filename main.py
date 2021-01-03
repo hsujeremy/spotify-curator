@@ -8,9 +8,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyClientCredentials
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV
 
-def getUserInput(audio_f, clf):
+def getUserInput(audio_f, clf, kmeans_clf):
     song = ''
     while song != 'quit':
         song = input("Enter a song name: ")
@@ -28,12 +29,13 @@ def getUserInput(audio_f, clf):
         df_song = pd.DataFrame(audio_features)
         print(clf.classes_)
         print("Prediction: ", clf.predict_proba(df_song))
+        print("Kmeans prediction: ", kmeans_clf.predict(df_song))
         
 
 def getRandomSongs(audio_f):
     audio_features = []
 
-    for i in range(50):
+    for i in range(10):
         offset = random.randint(0, 500)
         print(offset)
         
@@ -96,34 +98,6 @@ def setup():
                                           client_secret=client_secret)
     return spotipy.Spotify(client_credentials_manager=cc_manager)
 
-
-# def add_album_songs(uri):
-#     spotify_albums[uri] = {}
-#     for attribute in song_attributes[:5]:
-#         spotify_albums[uri][attribute] = []
-
-#     tracks = sp.album_tracks(uri)
-#     for item in tracks['items']:
-#         spotify_albums[uri]['album'].append(album_names[album_count])
-#         for attribute in song_attributes[1:5]:
-#             spotify_albums[uri][attribute].append(item[attribute])
-
-
-# def get_audio_features(album):
-#     for attribute in song_attributes[5:]:
-#         spotify_albums[album][attribute] = []
-
-#     count = 0
-#     for track in spotify_albums[album]['uri']:
-#         features = sp.audio_features(track)
-#         for attribute in song_attributes[5:-1]:
-#             spotify_albums[album][attribute].append(features[0][attribute])
-
-#         pop = sp.track(track)
-#         spotify_albums[album]['popularity'].append(pop['popularity'])
-#         count += 1
-
-
 if __name__ == '__main__':
     sp = setup()
     result = sp.search('Wallows')
@@ -137,42 +111,6 @@ if __name__ == '__main__':
                        'valence', 'popularity')
     
     features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence']
-    # album_names = []
-    # album_uris = []
-    # for item in sp_albums['items']:
-    #     album_names.append(item['name'])
-    #     album_uris.append(item['uri'])
-
-    # spotify_albums = {}
-
-    # album_count = 0
-    # for i in album_uris:
-    #     add_album_songs(i)
-    #     print('Songs from {} have been added to spotify_albums dictionary'.format(album_names[album_count]))
-    #     album_count += 1
-
-    # sleep_min = 2
-    # sleep_max = 5
-    # start_time = time.time()
-    # request_count = 0
-    # for i in spotify_albums:
-    #     get_audio_features(i)
-    #     request_count += 1
-    #     if request_count % 5 == 0:
-    #         print('{} playlists completed'.format(request_count))
-    #         time.sleep(np.random.uniform(sleep_min, sleep_max))
-    #         print('Loop #: {}'.format(request_count))
-    #         print('Elapsed Time: {} seconds'.format(time.time() - start_time))
-
-    # dict_df = {}
-    # for attribute in song_attributes:
-    #     dict_df[attribute] = []
-
-    # for album in spotify_albums:
-    #     for feature in spotify_albums[album]:
-    #         dict_df[feature].extend(spotify_albums[album][feature])
-
-    # df = pd.DataFrame.from_dict(dict_df)
 
     df_user = pd.DataFrame(get_songs_from_user(features, '12176195123'))
     n_user_songs = len(df_user.index)
@@ -194,6 +132,13 @@ if __name__ == '__main__':
     print(df_user)
     
     forest = RandomForestClassifier()
+
+    kmeans = KMeans()
+
+    kmeans_params = {
+        "n_clusters": np.arange(2, 10, 1),
+        "n_init": np.arange(10, 15, 1),
+    }
     forest_params = {
         "n_estimators": np.arange(10, 200, 10),
         "min_samples_leaf": np.arange(1, 100, 10),
@@ -201,22 +146,13 @@ if __name__ == '__main__':
     }
     clf = GridSearchCV(forest, forest_params)
 
+    kmeans_clf = GridSearchCV(kmeans, kmeans_params)
+    kmeans_clf.fit(df_user)
+    print(kmeans_clf.best_params_)
     clf.fit(df_user, labels)
     print(clf.best_params_)
 
-    getUserInput(features, clf)
-
-    
-
-    
-        
-        
-
-
-
-    # print('Original dataframe size: {}'.format(len(df)))
-    # final_df = df.sort_values('popularity', ascending=False).drop_duplicates('name').sort_index()
-    # print('Final dataframe size: {}'.format(len(final_df)))
+    getUserInput(features, clf, kmeans_clf)
 
     df_user.to_csv('./user_liked_songs.csv')
     df_random.to_csv('./random_songs.csv')
