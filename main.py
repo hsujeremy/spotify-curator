@@ -12,6 +12,17 @@ from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV
 
 def getUserInput(audio_f, clf, kmeans_clf):
+    """
+    Gets song name from user input and returns probability of liking inputted song name
+
+    Args: 
+        audio_f (arr): list of audio features to include when calling the spotify api 
+        clf (obj): RandomForestClassifier clf
+        kmeans_clf (obj): Kmeans Classifier clf
+        
+    Returns: 
+        Prints to console: prediction of inputted song as well as the kmeans category
+    """
     song = ''
     while song != 'quit':
         song = input("Enter a song name: ")
@@ -33,9 +44,18 @@ def getUserInput(audio_f, clf, kmeans_clf):
         
 
 def getRandomSongs(audio_f):
+    """
+    Gets random songs from spotify API 
+
+    Args: 
+        audio_f (arr): list of audio features to include when adding the song to the dataframe
+
+    Returns: 
+        array of random songs with filtered features to be converted to dataframe
+    """
     audio_features = []
 
-    for i in range(10):
+    for i in range(200):
         offset = random.randint(0, 500)
         print(offset)
         
@@ -54,19 +74,48 @@ def getRandomSongs(audio_f):
     return audio_features
 
 def getRandomSearch():
+    """
+    Gets random search queries of the form <letter>% by choosing randomly from the alphabet 
+
+    Args: 
+        none
+
+    Returns: 
+        Random search query 
+    """
     characters = 'abcdefghijklmnopqrstuvwxyz'
     index = random.randint(0, 25)
 
     return characters[index] + '%'
 
 def remove_features(features, item):
+  """
+  Prunes given features for only desired ones 
+
+  Args: 
+    features (arr): list of desired features for data analysis
+    item (obj): song object from api get request
+
+  Returns: 
+    Pruned object with desired audio features.
+  """
   ret = {}
   for f in features:
     ret[f] = item[f]
   return ret
 
 def get_songs_from_user(audio_f, uid):
-  playlists = sp.user_playlists('12176195123') #My user profile
+  """
+  Gets liked songs from playlists from given uid 
+
+  Args: 
+    audio_f (arr): array of desired audio features 
+    uid (str): Username of logged in user 
+
+  Returns: 
+    list of audio features for all songs in a user's playlists, pruned for desired audio features 
+  """
+  playlists = sp.user_playlists(uid) #My user profile
   audio_features = []
   while playlists:
     print("Playlist names: ")  
@@ -91,6 +140,9 @@ def get_songs_from_user(audio_f, uid):
  
 
 def setup():
+    """"
+    Sets up Spotify client, gets environment variables 
+    """"
     load_dotenv()
     client_id = os.getenv('CLIENT_ID')
     client_secret = os.getenv('CLIENT_SECRET')
@@ -112,7 +164,7 @@ if __name__ == '__main__':
     
     features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence']
 
-    df_user = pd.DataFrame(get_songs_from_user(features, '12176195123'))
+    df_user = pd.DataFrame(get_songs_from_user(features, 'longvv2000'))
     n_user_songs = len(df_user.index)
     user_labels = np.ones(n_user_songs)
 
