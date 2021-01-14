@@ -38,4 +38,6 @@ class SpotifyModel(MLModel):
         df_song = pd.DataFrame(data)
         prediction = self.clf.predict_proba(df_song)
         kmeans_prediction = self.kmeans_clf.predict(df_song)
-        return {'prediction': prediction[0][1], 'kmeans_prediction': kmeans_prediction[0]}
+        result = {'prediction': float(prediction[0][1]), 'kmeans_prediction': float(kmeans_prediction[0])}
+        self.output_schema.validate(result)
+        return result

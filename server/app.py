@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
 import os
+import sys
 import json
 import time
 import requests
 import spotipy
+import pandas as pd
 from flask import Flask
 from flask import redirect
 from flask import request
 from flask import jsonify
 from flask import session
 from flask import make_response
+from flask_celery import make_celery
+sys.path.append('spotify_model')
+from spotify_model.original_model import setup, remove_features
+from spotify_model.spotify_predict import SpotifyModel
 
 
 app = Flask(__name__)
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_BACKEND'] = 'redis://localhost:6379/0'
+
+celery = make_celery(app)
 
 SSK = None
 CLI_ID = os.environ['CLIENT_ID']
@@ -51,7 +61,16 @@ def api_callback():
     response = requests.post(auth_token_url, data=data)
     body = response.json()
     session['token'] = body.get('access_token')
+    # return redirect('/get_profile_info')
     return redirect('http://localhost:3000/')
+
+@app.route('/get_profile_info', methods=['GET'])
+def get_profile_info():
+    if 'token' not in session:
+        return redirect('/login')
+    sp = spotipy.Spotify(auth=session['token'])
+    response = sp.current_user()
+    return response
 
 @app.route('/go', methods=['GET'])
 def go():
@@ -64,3 +83,37 @@ def go():
     print(response['id'])
     print(sp.user_playlists(response['id']))
     return 'Go'
+
+@app.route('/process')
+def process():
+    song = request.args.get('song')
+    if not song:
+        return 'Need to specify a song!'
+    x = predict.delay(song)
+    return song, x.task_id
+
+@app.route('/check/<task_id>')
+def check(task_id):
+    result = celery.AsyncResult(task_id)
+    print(result.status)
+    if result.status == 'PENDING':
+        return 'Not done'
+    return result.get()
+
+@celery.task(name='app.predict')
+def predict(song_name):
+    sp = setup()
+    features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness',
+                'tempo', 'valence']
+    song = sp.search(song_name, limit=1, offset=0)
+    audio_features = []
+    # Need to handle case where song does not exist
+    if song:
+        track = song['tracks']['items'][0]
+        song_features = sp.audio_features(track['id'])
+        if song_features:
+            removed = remove_features(features, song_features[0])
+            audio_features.append(removed)
+    sp_model = SpotifyModel()
+    result = sp_model.predict(audio_features)
+    return json.dumps(result)
