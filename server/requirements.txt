@@ -1,0 +1,7 @@
+Flask
+celery[redis]
+spotipy
+numpy
+pandas
+sklearn
+schema
