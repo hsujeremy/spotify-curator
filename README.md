@@ -3,7 +3,7 @@
 A full-stack web application leveraging machine learning to help Spotify users discover new song they love.
 
 ## Approach and Data Analysis 
-Our main dataset consists of songs included in a given user's playlist, labeled as songs that they user "likes," and a relatively equal set of random songs labeled as songs that the user "dislikes." For each song, we take a look at several audio features using the Spotify api, mainly 
+Our main dataset consists of songs included in a given user's playlist, labeled as songs that they user "likes," and a relatively equal set of random songs labeled as songs that the user "dislikes." For each song, we take a look at several audio features using the Spotify API, mainly 
 ```
 ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence']
 ```
