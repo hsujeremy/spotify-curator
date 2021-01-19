@@ -13,7 +13,8 @@ from flask import jsonify
 from flask import session
 from flask_celery import make_celery
 sys.path.append('spotify_model')
-from spotify_model.original_model import setup, remove_features
+from spotify_model.original_model import setup
+from spotify_model.original_model import remove_features
 from spotify_model.spotify_predict import SpotifyModel
 
 
@@ -106,7 +107,6 @@ def predict(songs):
                 'tempo', 'valence']
     sp_model = SpotifyModel()
     predictions = {}
-    time.sleep(5)
     for song_name in songs:
         song = sp.search(song_name, limit=1, offset=0)
         audio_features = []
