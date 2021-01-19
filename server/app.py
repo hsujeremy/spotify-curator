@@ -11,7 +11,6 @@ from flask import redirect
 from flask import request
 from flask import jsonify
 from flask import session
-from flask import make_response
 from flask_celery import make_celery
 sys.path.append('spotify_model')
 from spotify_model.original_model import setup, remove_features
@@ -21,7 +20,6 @@ from spotify_model.spotify_predict import SpotifyModel
 app = Flask(__name__)
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_BACKEND'] = 'redis://localhost:6379/0'
-
 celery = make_celery(app)
 
 SSK = None
@@ -41,7 +39,7 @@ def verify():
     print(auth_url)
     return redirect(auth_url)
 
-@app.route('/index')
+@app.route('/index', methods=['GET'])
 def index():
     return 'Index from server'
 
@@ -84,36 +82,43 @@ def go():
     print(sp.user_playlists(response['id']))
     return 'Go'
 
-@app.route('/process')
-def process():
-    song = request.args.get('song')
-    if not song:
-        return 'Need to specify a song!'
-    x = predict.delay(song)
-    return song, x.task_id
+# Process multiple songs
+@app.route('/make_predictions', methods=['POST'])
+def make_predictions():
+    # Should probably check if songs are empty in here as well
+    songs = request.get_json()['songs']
+    task = predict.delay(songs)
+    return jsonify({'task_id': task.task_id})
 
 @app.route('/check/<task_id>')
 def check(task_id):
     result = celery.AsyncResult(task_id)
     print(result.status)
-    if result.status == 'PENDING':
-        return 'Not done'
+    if result.status == 'PENDING' or result.status == 'FAILURE':
+        return result.status
     return result.get()
 
+# Predict multiple songs
 @celery.task(name='app.predict')
-def predict(song_name):
+def predict(songs):
     sp = setup()
     features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness',
                 'tempo', 'valence']
-    song = sp.search(song_name, limit=1, offset=0)
-    audio_features = []
-    # Need to handle case where song does not exist
-    if song:
-        track = song['tracks']['items'][0]
-        song_features = sp.audio_features(track['id'])
-        if song_features:
-            removed = remove_features(features, song_features[0])
-            audio_features.append(removed)
     sp_model = SpotifyModel()
-    result = sp_model.predict(audio_features)
-    return json.dumps(result)
+    predictions = {}
+    time.sleep(5)
+    for song_name in songs:
+        song = sp.search(song_name, limit=1, offset=0)
+        audio_features = []
+        if song:
+            # Should probably include approximate song name there too
+            track = song['tracks']['items'][0]
+            song_features = sp.audio_features(track['id'])
+            if song_features:
+                removed = remove_features(features, song_features[0])
+                audio_features.append(removed)
+            print('')
+            predictions[song_name] = sp_model.predict(audio_features)
+        else:
+            predictions[song_name] = 'Could not find a matching song'
+    return json.dumps(predictions)
