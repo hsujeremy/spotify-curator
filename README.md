@@ -7,7 +7,7 @@ Our main dataset consists of songs included in a given user's playlist, labeled 
 ```
 ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence']
 ```
-Each value is a number between 0 and 1, therefore they can easily be transferred and put into a supervised classification model. With some research we settled on a Random Foest Classifier, using GridSearchV with the params:
+Each value is a number between 0 and 1, therefore they can easily be transferred and put into a supervised classification model. With some research we settled on a Random Forest Classifier, using GridSearchV with the params:
 
 ```
 forest_params = {
@@ -16,7 +16,7 @@ forest_params = {
       'max_features': ['auto', 'sqrt', 'log2']
   }
 ```
-Approaches can obviously be improved with accurate data, if a user for example has a playlist of songs that has their dislikes. Furthermore, an unsupervised model such as kmeans could be used to determine the specific genre or subset a given song falls within, and using a simple linear classifier within that subset of data to determine whether that given song falls within an acceptable range in that genre. 
+Approaches can obviously be improved with accurate data, if a user for example has a playlist of songs that has their dislikes. Furthermore, an unsupervised model such as k-means could be used to determine the specific genre or subset a given song falls within, and using a simple linear classifier within that subset of data to determine whether that given song falls within an acceptable range in that genre. 
 
 ## Backend
 ### Tech Stack
