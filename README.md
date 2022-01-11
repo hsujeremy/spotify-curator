@@ -1,9 +1,9 @@
-# Spotify-Curator
+# ML-Enabled Spotify Curator
 
 **Authors**: Jeremy Hsu and Steve Li
 
-A full-stack web application leveraging machine learning to help Spotify users
-discover new song they love.
+Spotify Curator is a full-stack web application leveraging machine learning to
+help Spotify users discover new songs they love.
 
 ## Approach and Data Analysis
 Our main dataset consists of songs included in a given user's playlist, labeled
