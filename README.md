@@ -1,11 +1,14 @@
-# ML-Enabled Spotify Curator
+# Spotify Curator: An ML-Enabled Spotify Assistant
 
 **Authors**: Jeremy Hsu and Steve Li
 
 Spotify Curator is a full-stack web application leveraging machine learning to
 help Spotify users discover new songs they love.
 
-## Approach and Data Analysis
+Spotify Curator is no longer in active development and is currently in maintence
+mode.
+
+## ML Approach and Data Analysis
 Our main dataset consists of songs included in a given user's playlist, labeled
 as songs that they user "likes," and a relatively equal set of random songs
 labeled as songs that the user "dislikes." For each song, we take a look at
@@ -24,7 +27,7 @@ Each value is a number between 0 and 1, therefore they can easily be transferred
 and put into a supervised classification model. With some research, we settled on
 a Random Foest Classifier, using GridSearchV with the parameters:
 
-```
+```python
 forest_params = {
     'n_estimators': np.arange(10, 200, 10),
     'min_samples_leaf': np.arange(1, 100, 10),
@@ -52,26 +55,27 @@ The frontend client is written in JavaScript using the React framework.
 ### Backend Setup
 
 We recommend using a virtual environment. To create one, run:
-```
-python3 -m venv venv
-source venv/bin/activate
+```bash
+$ python3 -m venv venv
+$ source venv/bin/activate
 ```
 And to install depedencies:
+```bash
+$ pip(3) install -r requirements.txt
 ```
-pip(3) install -r requirements.txt
-```
-You also need to first set environment variables for the Flask app, Spotify CLIENT_ID, and Spotify CLIENT_SECRET:
-```
-export FLASK_APP={path to}/app.py
-export CLIENT_ID={your client ID}
-export CLIENT_SECRET={your client secret}
+You also need to first set environment variables for the Flask app, Spotify
+CLIENT_ID, and Spotify CLIENT_SECRET:
+```bash
+$ export FLASK_APP={path to}/app.py
+$ export CLIENT_ID={your client ID}
+$ export CLIENT_SECRET={your client secret}
 ```
 For everything to work as intended, there should be at least 3 servers running
 in total (1 Flask, 1 Redis, and 1-16 Celery workers).
-```
-redis-server
-celery -A app.celery worker --loglevel=info
-flask run
+```bash
+$ redis-server
+$ celery -A app.celery worker --loglevel=info
+$ flask run
 ```
 
 ### Frontend Setup
@@ -79,9 +83,9 @@ flask run
 The client is written in JavaScript with React. You can install required
 dependencies with:
 ```
-npm install
+$ npm install
 ```
 Once the server is running, you can start your app with:
 ```
-yarn start
+$ yarn start
 ```
