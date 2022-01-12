@@ -43,10 +43,18 @@ that genre.
 
 ## Architecture Overview
 
+The broad overview of Spotify Curator is as follows:
+
+<img
+  src="images/full-architecture.png"
+  title="Full Architecture"
+  alt="Full Architecture"
+/>
+
 The backend server is written in Python and uses Flask. We call the Spotify Web
 API here. To deploy the models, we process long running tasks using a
 distributed task queue. We use Celery as the queue with Redis currently serving
-as both the message broker and the Celery backend.
+as both the message broker and the database.
 
 The frontend client is written in JavaScript using the React framework.
 
