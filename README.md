@@ -43,7 +43,7 @@ that genre.
 
 ## Architecture Overview
 
-The broad overview of Spotify Curator is as follows:
+The high-level architecture layout of Spotify Curator is as follows:
 
 <img
   src="images/full-architecture.png"
