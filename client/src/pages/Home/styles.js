@@ -2,52 +2,52 @@ import styled from 'styled-components'
 import { Colors } from '../../styles/index'
 
 export const Container = styled.div`
-    width: 100%; 
-    min-height: 100vh; 
-    background: ${Colors.primary};
-    display: flex; 
-    justify-content: center; 
+  width: 100%;
+  min-height: 100vh;
+  background: ${Colors.primary};
+  display: flex;
+  justify-content: center;
 
 `
 export const ContainerInner = styled.div`
-    width: 100%; 
-    max-width: 1024px; 
-    min-height: 100vh; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
+  width: 100%;
+  max-width: 1024px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
 `
 
 export const Form = styled.div`
-    width: 80%; 
-    max-width: 400px; 
+  width: 80%;
+  max-width: 400px;
 
-    h1 {
-        color: #ffffff; 
-    }
+  h1 {
+    color: #ffffff;
+  }
 `
 
 export const Row = styled.div`
-    width: 100%; 
-    display: flex; 
-    justify-content: space-between; 
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 `
 
 export const Icon = styled.div`
-    color: ${Colors.ternary};
-    &:hover {
-        ${Colors.hightlight}; 
-        cursor: pointer; 
-    }
+  color: ${Colors.ternary};
+  &:hover {
+    ${Colors.hightlight};
+    cursor: pointer;
+  }
 `
 
 export const Input = styled.input`
   width: 86%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box; 
-  margin-bottom: 1em; 
+    box-sizing: border-box;
+  margin-bottom: 1em;
   font-family: 'Roboto', sans-serif;
 
   background-color: ${Colors.secondary};
@@ -71,50 +71,48 @@ export const Input = styled.input`
 `;
 
 export const Button = styled.button`
-    width: 100%; 
-    font-family: 'Roboto', sans-serif;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
 
-    padding: 8px 20px;
-    border-radius: 25px;
-    // background-color: ${Colors.hightlight};
-    background: none; 
-    border: none;
-    color: #ffffff;
-    box-shadow: 0 2px 0 rgba(0,0,0,.045);
-    height: 40px;
-    font-weight: 600;
-    margin-bottom: 1.5em; 
-    border: 1px solid #ffffff;
-    transition: 0.2s; 
+  padding: 8px 20px;
+  border-radius: 25px;
+  // background-color: ${Colors.hightlight};
+  background: none;
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 2px 0 rgba(0,0,0,.045);
+  height: 40px;
+  font-weight: 600;
+  margin-bottom: 1.5em;
+  border: 1px solid #ffffff;
+  transition: 0.2s;
 
-    &:hover {
-        background-color: ${Colors.hightlight};
-        border: 1px solid ${Colors.hightlight};
-        cursor: pointer; 
-    }
+  &:hover {
+    background-color: ${Colors.hightlight};
+    border: 1px solid ${Colors.hightlight};
+    cursor: pointer;
+  }
 `;
 
 export const Add = styled.div`
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box; 
-    width: 100%; 
-    display: flex; 
-    margin-bottom: 1.5em; 
-    align-items: center; 
-    transition: 0.2s; 
-    border-radius: 5px; 
-    padding: 5px 10px 5px 10px; 
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  margin-bottom: 1.5em;
+  align-items: center;
+  transition: 0.2s;
+  border-radius: 5px;
+  padding: 5px 10px 5px 10px;
 
-    &:hover{
-        background: ${Colors.secondary}; 
-        cursor: pointer; 
-    }
+  &:hover{
+    background: ${Colors.secondary};
+    cursor: pointer;
+  }
 `
 
 export const AddButton = styled.p`
-    margin: 0 0 0 10px; 
-    color: ${Colors.ternary}; 
+  margin: 0 0 0 10px;
+  color: ${Colors.ternary};
 `
-
-

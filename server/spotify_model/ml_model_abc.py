@@ -4,7 +4,10 @@ from abc import abstractmethod
 
 
 class MLModel(ABC):
-    """Abstract base class for ML model prediction code. Original code by Brian Schmidt"""
+    """
+    Abstract base class for ML model prediction code. Original code by Brian
+    Schmidt
+    """
     # @property
     # @abstractmethod
     # def input_schema(self):

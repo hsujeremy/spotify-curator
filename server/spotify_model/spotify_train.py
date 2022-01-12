@@ -76,14 +76,24 @@ def get_songs_from_user(sp, audio_f, uid):
 def setup():
     client_id = os.environ['CLIENT_ID']
     client_secret = os.environ['CLIENT_SECRET']
-    cc_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+    cc_manager = SpotifyClientCredentials(client_id=client_id,
+                                          client_secret=client_secret)
     return spotipy.Spotify(client_credentials_manager=cc_manager)
 
 def train():
     sp = setup()
 
-    features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness',
-                'tempo', 'valence']
+    features = [
+        'acousticness',
+        'danceability',
+        'energy',
+        'instrumentalness',
+        'liveness',
+        'loudness',
+        'speechiness',
+        'tempo',
+        'valence'
+    ]
 
     df_user = pd.DataFrame(get_songs_from_user(sp, features, 'jeremyhsu1'))
     n_user_songs = len(df_user.index)

@@ -28,8 +28,10 @@ class SpotifyModel(MLModel):
     def __init__(self):
         dirpath = os.path.dirname(os.path.realpath(__file__))
         # Assumes that models are already loaded
-        self.clf = joblib.load(os.path.join(dirpath, 'model_files', 'spotify.joblib'))
-        self.kmeans_clf = joblib.load(os.path.join(dirpath, 'model_files', 'spotify_kmeans.joblib'))
+        self.clf = joblib.load(os.path.join(dirpath, 'model_files',
+                                            'spotify.joblib'))
+        self.kmeans_clf = joblib.load(os.path.join(dirpath, 'model_files',
+                                                   'spotify_kmeans.joblib'))
 
     def predict(self, data):
         # # Call super method to validate data against input_schema
@@ -39,6 +41,9 @@ class SpotifyModel(MLModel):
         df_song = pd.DataFrame(data)
         prediction = self.clf.predict_proba(df_song)
         kmeans_prediction = self.kmeans_clf.predict(df_song)
-        result = {'prediction': float(prediction[0][1]), 'kmeans_prediction': float(kmeans_prediction[0])}
+        result = {
+            'prediction': float(prediction[0][1]),
+            'kmeans_prediction': float(kmeans_prediction[0]),
+        }
         # self.output_schema.validate(result)
         return result

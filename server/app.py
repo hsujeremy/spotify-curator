@@ -36,7 +36,9 @@ SHOW_DIALOG = True # Set to False when in production
 
 @app.route('/login')
 def verify():
-    auth_url = '{}/authorize?client_id={}&response_type=code&redirect_uri={}&scope={}&show_dialog={}'.format(API_BASE, CLI_ID, REDIRECT_URI, SCOPE, SHOW_DIALOG)
+    auth_url = """{}/authorize?client_id={}&response_type=code&redirect_uri={}&
+    scope={}&show_dialog={}""".format(API_BASE, CLI_ID, REDIRECT_URI, SCOPE,
+                                      SHOW_DIALOG)
     print(auth_url)
     return redirect(auth_url)
 
@@ -103,8 +105,17 @@ def check(task_id):
 @celery.task(name='app.predict')
 def predict(songs):
     sp = setup()
-    features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness',
-                'tempo', 'valence']
+    features = [
+        'acousticness',
+        'danceability',
+        'energy',
+        'instrumentalness',
+        'liveness',
+        'loudness',
+        'speechiness',
+        'tempo',
+        'valence'
+    ]
     sp_model = SpotifyModel()
     predictions = {}
     for song_name in songs:
